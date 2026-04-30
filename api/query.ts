@@ -35,8 +35,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { sql: whereSql, params } = parameterizeWhere(where, allowedColumns)
 
     const [countResult, dataResult] = await Promise.all([
-      sql(`SELECT COUNT(*) AS count FROM transactions WHERE ${whereSql}`, params),
-      sql(
+      sql.query(`SELECT COUNT(*) AS count FROM transactions WHERE ${whereSql}`, params),
+      sql.query(
         `SELECT * FROM transactions WHERE ${whereSql}
          ORDER BY id
          LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
@@ -45,8 +45,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ])
 
     res.json({
-      rows:     dataResult,
-      total:    parseInt((countResult[0] as { count: string }).count, 10),
+      rows:     dataResult.rows,
+      total:    parseInt((countResult.rows[0] as { count: string }).count, 10),
       page:     pageNum,
       pageSize: pageSizeNum,
     })
