@@ -35,8 +35,6 @@ function validateValue(raw: string, type: FieldType, operator: Operator | null):
 }
 
 // ── upstream context ──────────────────────────────────────────────────────────
-// Two separate selectors returning primitives/stable refs so Zustand's
-// Object.is check doesn't see a new object every render and loop infinitely.
 
 function useUpstreamOperator(nodeId: string): Operator | null {
   return useGraphStore((s) => {
@@ -57,14 +55,14 @@ function useUpstreamField(nodeId: string) {
     const fieldEdge = s.edges.find((e) => e.target === opNode.id)
     const fieldNode = fieldEdge ? s.nodes.find((n) => n.id === fieldEdge.source) : undefined
     if (!fieldNode || fieldNode.type !== 'field') return undefined
-    return getField(fieldNode.data.fieldId as string) // stable ref from FIELDS array
+    return getField(fieldNode.data.fieldId as string)
   })
 }
 
 // ── component ─────────────────────────────────────────────────────────────────
 
 const inputBase =
-  'nodrag nopan w-full bg-sky-900 border border-sky-700 rounded-lg px-2 py-1 text-sm text-sky-100 placeholder:text-sky-700 focus:outline-none focus:border-sky-400'
+  'nodrag nopan w-full bg-white border border-sky-300 rounded-lg px-2 py-1 text-sm text-sky-900 placeholder:text-sky-400 focus:outline-none focus:border-sky-500 dark:bg-sky-900 dark:border-sky-700 dark:text-sky-100 dark:placeholder:text-sky-700 dark:focus:border-sky-400'
 
 export function ValueNode({ id, data, selected }: NodeProps) {
   const updateNodeData = useGraphStore((s) => s.updateNodeData)
@@ -93,15 +91,15 @@ export function ValueNode({ id, data, selected }: NodeProps) {
     <div
       className={cn(
         'flex flex-col gap-1.5 px-3 py-2.5 rounded-xl border-2 shadow-md min-w-44',
-        'bg-sky-950 text-sky-100 border-sky-600',
-        selected && 'ring-2 ring-sky-400 ring-offset-1 ring-offset-zinc-900',
+        'bg-sky-50 text-sky-900 border-sky-400 dark:bg-sky-950 dark:text-sky-100 dark:border-sky-600',
+        selected && 'ring-2 ring-sky-400 ring-offset-1 ring-offset-zinc-50 dark:ring-offset-zinc-900',
       )}
     >
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-sky-500">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-sky-600 dark:text-sky-500">
         Value
       </span>
       {field && (
-        <span className="text-[11px] text-sky-400/60 -mt-0.5">
+        <span className="text-[11px] text-sky-500/70 dark:text-sky-400/60 -mt-0.5">
           {field.label}{operator ? ` ${operator}` : ''}
         </span>
       )}
@@ -115,7 +113,7 @@ export function ValueNode({ id, data, selected }: NodeProps) {
             value={value}
             onChange={(e) => updateNodeData(id, { value: e.target.value })}
           />
-          {error   && <p className="text-[10px] text-red-400 -mt-0.5">{error}</p>}
+          {error   && <p className="text-[10px] text-red-500 -mt-0.5">{error}</p>}
           <input
             className={inputBase}
             type={inputType}
@@ -123,7 +121,7 @@ export function ValueNode({ id, data, selected }: NodeProps) {
             value={valueTo}
             onChange={(e) => updateNodeData(id, { valueTo: e.target.value })}
           />
-          {errorTo && <p className="text-[10px] text-red-400 -mt-0.5">{errorTo}</p>}
+          {errorTo && <p className="text-[10px] text-red-500 -mt-0.5">{errorTo}</p>}
         </div>
       ) : (
         <div className="flex flex-col gap-1">
@@ -134,19 +132,19 @@ export function ValueNode({ id, data, selected }: NodeProps) {
             value={value}
             onChange={(e) => updateNodeData(id, { value: e.target.value })}
           />
-          {error && <p className="text-[10px] text-red-400 -mt-0.5">{error}</p>}
+          {error && <p className="text-[10px] text-red-500 -mt-0.5">{error}</p>}
         </div>
       )}
 
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-3 !h-3 !border-2 !border-sky-400 !bg-sky-900"
+        className="!w-3 !h-3 !border-2 !border-sky-500 !bg-sky-50 dark:!border-sky-400 dark:!bg-sky-900"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-3 !h-3 !border-2 !border-sky-400 !bg-sky-900"
+        className="!w-3 !h-3 !border-2 !border-sky-500 !bg-sky-50 dark:!border-sky-400 dark:!bg-sky-900"
       />
     </div>
   )

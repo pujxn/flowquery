@@ -8,10 +8,10 @@ interface PaletteEntry {
 }
 
 const PALETTE: PaletteEntry[] = [
-  { kind: 'field',    label: 'Field',    colorClass: 'bg-emerald-900 border-emerald-700 text-emerald-200 hover:bg-emerald-800' },
-  { kind: 'operator', label: 'Operator', colorClass: 'bg-amber-900   border-amber-700   text-amber-200   hover:bg-amber-800'   },
-  { kind: 'value',    label: 'Value',    colorClass: 'bg-sky-900      border-sky-700      text-sky-200      hover:bg-sky-800'      },
-  { kind: 'logic',    label: 'Logic',    colorClass: 'bg-rose-900     border-rose-700     text-rose-200     hover:bg-rose-800'     },
+  { kind: 'field',    label: 'Field',    colorClass: 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900 dark:border-emerald-700 dark:text-emerald-200 dark:hover:bg-emerald-800' },
+  { kind: 'operator', label: 'Operator', colorClass: 'bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100 dark:bg-amber-900 dark:border-amber-700 dark:text-amber-200 dark:hover:bg-amber-800' },
+  { kind: 'value',    label: 'Value',    colorClass: 'bg-sky-50 border-sky-300 text-sky-700 hover:bg-sky-100 dark:bg-sky-900 dark:border-sky-700 dark:text-sky-200 dark:hover:bg-sky-800' },
+  { kind: 'logic',    label: 'Logic',    colorClass: 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 dark:bg-rose-900 dark:border-rose-700 dark:text-rose-200 dark:hover:bg-rose-800' },
 ]
 
 export function NodePalette() {
@@ -31,8 +31,8 @@ export function NodePalette() {
 
   return (
     <Panel position="top-left">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-3 flex flex-col gap-2 shadow-xl">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 mb-0.5">
+      <div className="bg-white border border-zinc-200 rounded-xl p-3 flex flex-col gap-2 shadow-xl dark:bg-zinc-900 dark:border-zinc-700">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-0.5">
           Add Node
         </p>
         {PALETTE.map(({ kind, label, colorClass }) => (

@@ -22,7 +22,7 @@ function CopyPasteHandler() {
   return null
 }
 
-export function FlowCanvas() {
+export function FlowCanvas({ dark }: { dark: boolean }) {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useGraphStore()
   const [connectionError, setConnectionError] = useState<string | null>(null)
   useUrlSync()
@@ -59,12 +59,17 @@ export function FlowCanvas() {
         isValidConnection={isValidConnection}
         nodeTypes={nodeTypes}
         fitView
-        className="bg-zinc-950"
+        className="bg-zinc-50 dark:bg-zinc-950"
       >
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#3f3f46" />
-        <Controls className="!bg-zinc-800 !border-zinc-700 !text-zinc-200" />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={20}
+          size={1}
+          color={dark ? '#3f3f46' : '#d4d4d8'}
+        />
+        <Controls className="!bg-white !border-zinc-200 !text-zinc-600 dark:!bg-zinc-800 dark:!border-zinc-700 dark:!text-zinc-200" />
         <MiniMap
-          className="!bg-zinc-900 !border-zinc-700"
+          className="!bg-zinc-100 !border-zinc-200 dark:!bg-zinc-900 dark:!border-zinc-700"
           nodeColor={(n) => {
             const colors: Record<string, string> = {
               root:     '#7c3aed',
@@ -75,14 +80,14 @@ export function FlowCanvas() {
             }
             return colors[n.type ?? ''] ?? '#71717a'
           }}
-          maskColor="rgba(0,0,0,0.6)"
+          maskColor={dark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)'}
         />
         <NodePalette />
         <CopyPasteHandler />
 
         {connectionError && (
           <Panel position="bottom-center">
-            <div className="bg-red-950 border border-red-700 text-red-300 text-xs px-4 py-2 rounded-xl shadow-lg">
+            <div className="bg-red-50 border border-red-300 text-red-700 text-xs px-4 py-2 rounded-xl shadow-lg dark:bg-red-950 dark:border-red-700 dark:text-red-300">
               {connectionError}
             </div>
           </Panel>
