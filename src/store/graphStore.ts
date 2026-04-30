@@ -28,6 +28,7 @@ export interface GraphState {
   onConnect:     (connection: Connection) => void
   addNode:       (kind: NodeKind, position?: { x: number; y: number }) => void
   updateNodeData:(id: string, patch: Record<string, unknown>) => void
+  pasteNodes:    (nodes: Node[], edges: Edge[]) => void
 }
 
 const DEFAULT_NODES: Node[] = [
@@ -86,5 +87,11 @@ export const useGraphStore = create<GraphState>((set) => ({
       nodes: s.nodes.map((n) =>
         n.id === id ? { ...n, data: { ...n.data, ...patch } } : n,
       ),
+    })),
+
+  pasteNodes: (newNodes, newEdges) =>
+    set((s) => ({
+      nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), ...newNodes],
+      edges: [...s.edges, ...newEdges],
     })),
 }))
