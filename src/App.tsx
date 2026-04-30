@@ -1,5 +1,6 @@
 import './App.css'
 import { FlowCanvas } from './FlowCanvas'
+import { QueryPreview } from './components/QueryPreview'
 
 function App() {
   return (
@@ -14,9 +15,10 @@ function App() {
         </span>
       </header>
 
-      {/* Canvas */}
-      <main className="flex-1 overflow-hidden">
+      {/* Canvas + preview */}
+      <main className="flex-1 overflow-hidden flex">
         <FlowCanvas />
+        <QueryPreview />
       </main>
     </div>
   )
