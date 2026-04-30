@@ -16,7 +16,8 @@ export const operatorNodeDataSchema = z.object({
 })
 
 export const valueNodeDataSchema = z.object({
-  value: z.union([z.string(), z.number()]).nullable(),
+  value:   z.string().nullable(),
+  valueTo: z.string().nullable(), // only used for BETWEEN
 })
 
 export const logicNodeDataSchema = z.object({

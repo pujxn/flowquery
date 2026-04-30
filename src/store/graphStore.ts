@@ -16,7 +16,7 @@ const defaultDataByKind: Record<NodeKind, Record<string, unknown>> = {
   root:     { label: 'ROOT' },
   field:    { fieldId: null },
   operator: { operator: null },
-  value:    { value: null },
+  value:    { value: null, valueTo: null },
   logic:    { mode: 'AND' },
 }
 
