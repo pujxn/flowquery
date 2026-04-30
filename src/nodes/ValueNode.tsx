@@ -22,7 +22,7 @@ function validateSingle(raw: string, type: FieldType): string | null {
 }
 
 function validateValue(raw: string, type: FieldType, operator: Operator | null): string | null {
-  if (!raw.trim()) return null // empty = no error shown yet
+  if (!raw.trim()) return null
   if (operator === 'IN') {
     const items = raw.split(',').map((s) => s.trim()).filter(Boolean)
     for (const item of items) {
@@ -35,18 +35,29 @@ function validateValue(raw: string, type: FieldType, operator: Operator | null):
 }
 
 // ── upstream context ──────────────────────────────────────────────────────────
+// Two separate selectors returning primitives/stable refs so Zustand's
+// Object.is check doesn't see a new object every render and loop infinitely.
 
-function useUpstream(nodeId: string) {
+function useUpstreamOperator(nodeId: string): Operator | null {
   return useGraphStore((s) => {
     const opEdge = s.edges.find((e) => e.target === nodeId)
-    if (!opEdge) return { field: undefined, operator: null }
+    if (!opEdge) return null
     const opNode = s.nodes.find((n) => n.id === opEdge.source)
-    if (!opNode || opNode.type !== 'operator') return { field: undefined, operator: null }
+    if (!opNode || opNode.type !== 'operator') return null
+    return (opNode.data.operator as Operator | null) ?? null
+  })
+}
+
+function useUpstreamField(nodeId: string) {
+  return useGraphStore((s) => {
+    const opEdge = s.edges.find((e) => e.target === nodeId)
+    if (!opEdge) return undefined
+    const opNode = s.nodes.find((n) => n.id === opEdge.source)
+    if (!opNode || opNode.type !== 'operator') return undefined
     const fieldEdge = s.edges.find((e) => e.target === opNode.id)
     const fieldNode = fieldEdge ? s.nodes.find((n) => n.id === fieldEdge.source) : undefined
-    const field =
-      fieldNode?.type === 'field' ? getField(fieldNode.data.fieldId as string) : undefined
-    return { field, operator: opNode.data.operator as Operator | null }
+    if (!fieldNode || fieldNode.type !== 'field') return undefined
+    return getField(fieldNode.data.fieldId as string) // stable ref from FIELDS array
   })
 }
 
@@ -57,7 +68,8 @@ const inputBase =
 
 export function ValueNode({ id, data, selected }: NodeProps) {
   const updateNodeData = useGraphStore((s) => s.updateNodeData)
-  const { field, operator } = useUpstream(id)
+  const operator = useUpstreamOperator(id)
+  const field    = useUpstreamField(id)
 
   const value   = (data.value   as string) ?? ''
   const valueTo = (data.valueTo as string) ?? ''
@@ -103,7 +115,7 @@ export function ValueNode({ id, data, selected }: NodeProps) {
             value={value}
             onChange={(e) => updateNodeData(id, { value: e.target.value })}
           />
-          {error && <p className="text-[10px] text-red-400 -mt-0.5">{error}</p>}
+          {error   && <p className="text-[10px] text-red-400 -mt-0.5">{error}</p>}
           <input
             className={inputBase}
             type={inputType}
