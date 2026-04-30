@@ -1,11 +1,14 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
-import { FIELDS } from '@/types/fields'
 import { useGraphStore } from '@/store/graphStore'
+import { useSchema } from '@/hooks/useSchema'
+import { FIELDS } from '@/types/fields'
 import { cn } from '@/lib/utils'
 
 export function FieldNode({ id, data, selected }: NodeProps) {
   const updateNodeData = useGraphStore((s) => s.updateNodeData)
   const fieldId = (data.fieldId as string | null) ?? ''
+  const { data: schemaFields } = useSchema()
+  const fields = schemaFields ?? FIELDS
 
   return (
     <div
@@ -26,7 +29,7 @@ export function FieldNode({ id, data, selected }: NodeProps) {
         }
       >
         <option value="">Select field…</option>
-        {FIELDS.map((f) => (
+        {fields.map((f) => (
           <option key={f.id} value={f.id}>
             {f.label}
           </option>

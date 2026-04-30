@@ -65,7 +65,19 @@ https://flowquery.vercel.app
 - WHERE clause tokenized and re-parameterized: literals → `$N` params, identifiers validated against column whitelist — no raw interpolation
 - Both endpoints live and tested at https://flowquery.vercel.app/api/schema
 - Database: Neon (us-east-1), 60 rows seeded; `DATABASE_URL` set in Vercel env vars
-- Frontend not yet wired to the API
+
+### Frontend API wiring
+- `src/hooks/useSchema.ts` — TanStack Query fetches `/api/schema` once per session; falls back to static `FIELDS` as placeholder while loading
+- Field node dropdown populated from live schema instead of hardcoded list
+- Compiler `compileGraph(nodes, edges, fields?)` accepts dynamic fields array (defaults to static `FIELDS`)
+- `vite.config.ts` — dev server proxies `/api/*` to `http://localhost:3001` (local Express)
+- Local `flowquery_db` Postgres database created and seeded (60 rows)
+
+### Query Preview panel
+- **Run Query** button in footer — enabled only when query is valid; POSTs WHERE clause to `/api/query`; resets to page 1 and switches to Results tab on success
+- **Results tab** — scrollable table with row data; dimmed while paginating (no flash)
+- **Pagination** — Prev / Page N of M / Next bar; appears only when total > page size (20); uses TanStack Query `keepPreviousData` so old rows stay visible while next page loads
+- **Resizable panel** — drag the left edge to resize between 260–800px; body text selection suppressed during drag
 
 ## Tech stack
 ### Frontend
@@ -88,7 +100,6 @@ https://github.com/pujxn/flowquery
   rendered inside `<ReactFlow>`.
 
 ## Possible next steps
-- Wire frontend: dynamic Field dropdown from `/api/schema`, Run Query button + results table in QueryPreview
 - Edge labels showing the field/operator on connections
 - Undo / redo (Zustand middleware or ReactFlow's built-in)
 - Save / load graph as JSON export / import

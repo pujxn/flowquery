@@ -2,7 +2,7 @@ import type { Node, Edge } from '@xyflow/react'
 import type { FieldType } from '@/types/fields'
 import type { Operator } from '@/types/operators'
 import type { FieldNodeData, OperatorNodeData, ValueNodeData, LogicNodeData } from '@/types/nodeData'
-import { getField } from '@/types/fields'
+import { FIELDS, type FieldDefinition } from '@/types/fields'
 
 // ── internal tree types ───────────────────────────────────────────────────────
 
@@ -38,6 +38,7 @@ function compileNode(
   nodes: Node[],
   edges: Edge[],
   errors: string[],
+  fields: FieldDefinition[],
 ): ConditionNode | null {
   const node = nodes.find((n) => n.id === nodeId)
   if (!node) { errors.push(`Node ${nodeId} not found`); return null }
@@ -51,7 +52,7 @@ function compileNode(
       return null
     }
     const children = incoming
-      .map((e) => compileNode(e.source, nodes, edges, errors))
+      .map((e) => compileNode(e.source, nodes, edges, errors, fields))
       .filter((c): c is ConditionNode => c !== null)
     if (children.length === 0) return null
     return { kind: 'group', mode, children }
@@ -85,7 +86,7 @@ function compileNode(
     const { fieldId } = fieldNode.data as FieldNodeData
     if (!fieldId) { errors.push('A Field node has no column selected'); return null }
 
-    const field = getField(fieldId)
+    const field = fields.find((f) => f.id === fieldId)
     if (!field) { errors.push(`Unknown field: ${fieldId}`); return null }
 
     if (!value) { errors.push(`Value for "${field.label}" is empty`); return null }
@@ -175,7 +176,7 @@ function toREST(node: ConditionNode): unknown {
 
 // ── public entry point ────────────────────────────────────────────────────────
 
-export function compileGraph(nodes: Node[], edges: Edge[]): CompileResult {
+export function compileGraph(nodes: Node[], edges: Edge[], fields: FieldDefinition[] = FIELDS): CompileResult {
   const errors: string[] = []
 
   const root = nodes.find((n) => n.type === 'root')
@@ -187,11 +188,11 @@ export function compileGraph(nodes: Node[], edges: Edge[]): CompileResult {
   let tree: ConditionNode | null
 
   if (incoming.length === 1) {
-    tree = compileNode(incoming[0].source, nodes, edges, errors)
+    tree = compileNode(incoming[0].source, nodes, edges, errors, fields)
   } else {
     // multiple direct edges into Root → implicit AND
     const children = incoming
-      .map((e) => compileNode(e.source, nodes, edges, errors))
+      .map((e) => compileNode(e.source, nodes, edges, errors, fields))
       .filter((c): c is ConditionNode => c !== null)
     tree = { kind: 'group', mode: 'AND', children }
   }
