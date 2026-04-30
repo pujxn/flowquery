@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useShallow } from 'zustand/react/shallow'
+import { useStoreWithEqualityFn } from 'zustand/traditional'
 import { useGraphStore } from '@/store/graphStore'
 import { compileGraph } from '@/compiler'
 import { cn } from '@/lib/utils'
@@ -7,7 +7,11 @@ import { cn } from '@/lib/utils'
 type Tab = 'sql' | 'rest'
 
 export function QueryPreview() {
-  const result = useGraphStore(useShallow((s) => compileGraph(s.nodes, s.edges)))
+  const result = useStoreWithEqualityFn(
+    useGraphStore,
+    (s) => compileGraph(s.nodes, s.edges),
+    (a, b) => JSON.stringify(a) === JSON.stringify(b),
+  )
   const [tab, setTab] = useState<Tab>('sql')
 
   const hasOutput = result.sql !== null || result.errors.length > 0
