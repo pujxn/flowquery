@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { Operator } from './operators'
 
 export const rootNodeDataSchema = z.object({
   label: z.string(),
@@ -8,9 +9,10 @@ export const fieldNodeDataSchema = z.object({
   fieldId: z.string().nullable(),
 })
 
-// placeholder schemas — fleshed out when those nodes are built
 export const operatorNodeDataSchema = z.object({
-  operator: z.string().nullable(),
+  operator: z
+    .enum(['=', '!=', '>', '>=', '<', '<=', 'IN', 'BETWEEN'])
+    .nullable() as z.ZodNullable<z.ZodType<Operator>>,
 })
 
 export const valueNodeDataSchema = z.object({
