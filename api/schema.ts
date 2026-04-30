@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { getDb } from './_lib/db'
+import { getDb } from './_lib/db.js'
 
 const PG_TO_FIELD_TYPE: Record<string, string> = {
   integer:                       'number',

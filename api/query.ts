@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { getDb } from './_lib/db'
-import { parameterizeWhere } from './_lib/whereParser'
+import { getDb } from './_lib/db.js'
+import { parameterizeWhere } from './_lib/whereParser.js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
