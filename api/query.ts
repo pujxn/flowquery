@@ -45,8 +45,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ])
 
     res.json({
-      rows:     dataResult.rows,
-      total:    parseInt((countResult.rows[0] as { count: string }).count, 10),
+      rows:     dataResult,
+      total:    parseInt((countResult[0] as { count: string }).count, 10),
       page:     pageNum,
       pageSize: pageSizeNum,
     })
