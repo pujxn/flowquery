@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useGraphStore } from '@/store/graphStore'
 import { compileGraph } from '@/compiler'
 import { cn } from '@/lib/utils'
@@ -6,11 +7,8 @@ import { cn } from '@/lib/utils'
 type Tab = 'sql' | 'rest'
 
 export function QueryPreview() {
-  const nodes = useGraphStore((s) => s.nodes)
-  const edges = useGraphStore((s) => s.edges)
+  const result = useGraphStore(useShallow((s) => compileGraph(s.nodes, s.edges)))
   const [tab, setTab] = useState<Tab>('sql')
-
-  const result = useMemo(() => compileGraph(nodes, edges), [nodes, edges])
 
   const hasOutput = result.sql !== null || result.errors.length > 0
 
