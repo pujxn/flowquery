@@ -73,7 +73,7 @@ export function QueryPreview() {
           </pre>
         )}
 
-        {tab === 'rest' && result.rest && (
+        {tab === 'rest' && result.rest != null && (
           <pre className="text-xs font-mono text-sky-300 whitespace-pre-wrap break-words leading-relaxed">
             {JSON.stringify(result.rest, null, 2)}
           </pre>

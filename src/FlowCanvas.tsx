@@ -7,6 +7,7 @@ import {
   Panel,
   BackgroundVariant,
   type Connection,
+  type Edge,
   type FinalConnectionState,
 } from '@xyflow/react'
 import { useGraphStore } from '@/store/graphStore'
@@ -18,9 +19,9 @@ export function FlowCanvas() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useGraphStore()
   const [connectionError, setConnectionError] = useState<string | null>(null)
 
-  const isValidConnection = useCallback((connection: Connection) => {
+  const isValidConnection = useCallback((connection: Edge | Connection) => {
     const { nodes, edges } = useGraphStore.getState()
-    return isConnectionAllowed(connection, nodes, edges)
+    return isConnectionAllowed(connection as Connection, nodes, edges)
   }, [])
 
   const handleConnect = useCallback(

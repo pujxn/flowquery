@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 function fieldValidator(type: FieldType) {
   switch (type) {
-    case 'number': return z.coerce.number({ invalid_type_error: 'Must be a number' })
+    case 'number': return z.coerce.number({ error: 'Must be a number' })
     case 'date':   return z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Use YYYY-MM-DD' })
     case 'string': return z.string().min(1, { message: 'Cannot be empty' })
   }
