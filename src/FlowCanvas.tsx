@@ -9,9 +9,11 @@ import {
 } from '@xyflow/react'
 import { useGraphStore } from '@/store/graphStore'
 import { nodeTypes } from '@/nodes'
+import { NodePalette } from '@/components/NodePalette'
 
 export function FlowCanvas() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useGraphStore()
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
+    useGraphStore()
 
   const handleConnect = useCallback(
     (connection: Connection) => onConnect(connection),
@@ -28,7 +30,6 @@ export function FlowCanvas() {
         onConnect={handleConnect}
         nodeTypes={nodeTypes}
         fitView
-        proOptions={{ hideAttribution: false }}
         className="bg-zinc-950"
       >
         <Background
@@ -40,9 +41,19 @@ export function FlowCanvas() {
         <Controls className="!bg-zinc-800 !border-zinc-700 !text-zinc-200" />
         <MiniMap
           className="!bg-zinc-900 !border-zinc-700"
-          nodeColor="#7c3aed"
+          nodeColor={(n) => {
+            const colors: Record<string, string> = {
+              root:     '#7c3aed',
+              field:    '#059669',
+              operator: '#d97706',
+              value:    '#0284c7',
+              logic:    '#e11d48',
+            }
+            return colors[n.type ?? ''] ?? '#71717a'
+          }}
           maskColor="rgba(0,0,0,0.6)"
         />
+        <NodePalette />
       </ReactFlow>
     </div>
   )

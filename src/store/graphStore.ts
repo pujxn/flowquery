@@ -1,10 +1,23 @@
 import { create } from 'zustand'
-import { type Node, type Edge, addEdge, type Connection, applyNodeChanges, type NodeChange, applyEdgeChanges, type EdgeChange } from '@xyflow/react'
+import {
+  type Node,
+  type Edge,
+  addEdge,
+  type Connection,
+  applyNodeChanges,
+  type NodeChange,
+  applyEdgeChanges,
+  type EdgeChange,
+} from '@xyflow/react'
 
-export type NodeType = 'root' | 'field' | 'operator' | 'value' | 'logic'
+export type NodeKind = 'root' | 'field' | 'operator' | 'value' | 'logic'
 
-export interface RootNodeData extends Record<string, unknown> {
-  label: string
+const defaultDataByKind: Record<NodeKind, Record<string, unknown>> = {
+  root:     { label: 'ROOT' },
+  field:    { fieldId: null },
+  operator: { operator: null },
+  value:    { value: null },
+  logic:    { mode: 'AND' },
 }
 
 export interface GraphState {
@@ -12,17 +25,17 @@ export interface GraphState {
   edges: Edge[]
   onNodesChange: (changes: NodeChange[]) => void
   onEdgesChange: (changes: EdgeChange[]) => void
-  onConnect: (connection: Connection) => void
-  setNodes: (nodes: Node[]) => void
-  setEdges: (edges: Edge[]) => void
+  onConnect:     (connection: Connection) => void
+  addNode:       (kind: NodeKind) => void
+  updateNodeData:(id: string, patch: Record<string, unknown>) => void
 }
 
 const initialNodes: Node[] = [
   {
-    id: 'root-1',
-    type: 'root',
-    position: { x: 400, y: 300 },
-    data: { label: 'ROOT' } satisfies RootNodeData,
+    id:       'root-1',
+    type:     'root',
+    position: { x: 600, y: 300 },
+    data:     { label: 'ROOT' },
     deletable: false,
   },
 ]
@@ -32,14 +45,29 @@ export const useGraphStore = create<GraphState>((set) => ({
   edges: [],
 
   onNodesChange: (changes) =>
-    set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) })),
+    set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
 
   onEdgesChange: (changes) =>
-    set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
+    set((s) => ({ edges: applyEdgeChanges(changes, s.edges) })),
 
   onConnect: (connection) =>
-    set((state) => ({ edges: addEdge(connection, state.edges) })),
+    set((s) => ({ edges: addEdge(connection, s.edges) })),
 
-  setNodes: (nodes) => set({ nodes }),
-  setEdges: (edges) => set({ edges }),
+  addNode: (kind) => {
+    const id = `${kind}-${Date.now()}`
+    const node: Node = {
+      id,
+      type:     kind,
+      position: { x: 150 + Math.random() * 80, y: 150 + Math.random() * 80 },
+      data:     { ...defaultDataByKind[kind] },
+    }
+    set((s) => ({ nodes: [...s.nodes, node] }))
+  },
+
+  updateNodeData: (id, patch) =>
+    set((s) => ({
+      nodes: s.nodes.map((n) =>
+        n.id === id ? { ...n, data: { ...n.data, ...patch } } : n,
+      ),
+    })),
 }))

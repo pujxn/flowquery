@@ -1,10 +1,9 @@
-import { type NodeProps } from '@xyflow/react'
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { cn } from '@/lib/utils'
-import type { RootNodeData } from '@/store/graphStore'
+import type { RootNodeData } from '@/types/nodeData'
 
 export function RootNode({ data, selected }: NodeProps) {
-  const nodeData = data as RootNodeData
+  const { label } = data as RootNodeData
   return (
     <div
       className={cn(
@@ -18,7 +17,7 @@ export function RootNode({ data, selected }: NodeProps) {
         position={Position.Left}
         className="!w-3 !h-3 !border-2 !border-violet-400 !bg-violet-900"
       />
-      {nodeData.label}
+      {label}
     </div>
   )
 }
