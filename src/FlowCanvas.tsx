@@ -17,11 +17,15 @@ import { isConnectionAllowed } from '@/lib/graphValidation'
 import { useUrlSync } from '@/lib/useUrlSync'
 import { useCopyPaste } from '@/lib/useCopyPaste'
 
+function CopyPasteHandler() {
+  useCopyPaste()
+  return null
+}
+
 export function FlowCanvas() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useGraphStore()
   const [connectionError, setConnectionError] = useState<string | null>(null)
   useUrlSync()
-  useCopyPaste()
 
   const isValidConnection = useCallback((connection: Edge | Connection) => {
     const { nodes, edges } = useGraphStore.getState()
@@ -74,6 +78,7 @@ export function FlowCanvas() {
           maskColor="rgba(0,0,0,0.6)"
         />
         <NodePalette />
+        <CopyPasteHandler />
 
         {connectionError && (
           <Panel position="bottom-center">
