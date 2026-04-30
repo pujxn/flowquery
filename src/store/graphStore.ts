@@ -26,7 +26,7 @@ export interface GraphState {
   onNodesChange: (changes: NodeChange[]) => void
   onEdgesChange: (changes: EdgeChange[]) => void
   onConnect:     (connection: Connection) => void
-  addNode:       (kind: NodeKind) => void
+  addNode:       (kind: NodeKind, position?: { x: number; y: number }) => void
   updateNodeData:(id: string, patch: Record<string, unknown>) => void
 }
 
@@ -53,12 +53,12 @@ export const useGraphStore = create<GraphState>((set) => ({
   onConnect: (connection) =>
     set((s) => ({ edges: addEdge(connection, s.edges) })),
 
-  addNode: (kind) => {
+  addNode: (kind, position) => {
     const id = `${kind}-${Date.now()}`
     const node: Node = {
       id,
       type:     kind,
-      position: { x: 150 + Math.random() * 80, y: 150 + Math.random() * 80 },
+      position: position ?? { x: 150 + Math.random() * 80, y: 150 + Math.random() * 80 },
       data:     { ...defaultDataByKind[kind] },
     }
     set((s) => ({ nodes: [...s.nodes, node] }))

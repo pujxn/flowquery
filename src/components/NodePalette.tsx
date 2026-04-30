@@ -1,4 +1,4 @@
-import { Panel } from '@xyflow/react'
+import { Panel, useReactFlow } from '@xyflow/react'
 import { useGraphStore, type NodeKind } from '@/store/graphStore'
 
 interface PaletteEntry {
@@ -16,6 +16,18 @@ const PALETTE: PaletteEntry[] = [
 
 export function NodePalette() {
   const addNode = useGraphStore((s) => s.addNode)
+  const { screenToFlowPosition } = useReactFlow()
+
+  function handleAdd(kind: NodeKind) {
+    const center = screenToFlowPosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    })
+    addNode(kind, {
+      x: center.x + (Math.random() - 0.5) * 60,
+      y: center.y + (Math.random() - 0.5) * 60,
+    })
+  }
 
   return (
     <Panel position="top-left">
@@ -26,7 +38,7 @@ export function NodePalette() {
         {PALETTE.map(({ kind, label, colorClass }) => (
           <button
             key={kind}
-            onClick={() => addNode(kind)}
+            onClick={() => handleAdd(kind)}
             className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-colors ${colorClass}`}
           >
             {label}
