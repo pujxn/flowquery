@@ -53,21 +53,26 @@ https://flowquery.vercel.app
 - Defaults to OS `prefers-color-scheme` on first visit; choice persisted to localStorage
 - All nodes, palette, query preview, canvas, controls, and minimap theme correctly
 
-### Backend (`/server`)
+### Backend — local dev (`/server`)
 - Express + TypeScript + ts-node-dev; PostgreSQL via `pg`
-- `GET /api/schema` — queries `information_schema` and returns columns as `{ id, label, type }` so the frontend Field dropdown can be populated dynamically
-- `POST /api/query` — accepts `{ where, page, pageSize }`, runs the WHERE clause against `transactions` with full pagination, returns `{ rows, total, page, pageSize }`
-- WHERE clause is tokenized and re-parameterized (literals → `$N` params, identifiers validated against a column whitelist) — no raw string interpolation
 - CORS enabled for localhost:5173 / 5174
-- `seed.ts` creates the `transactions` table and inserts 60 rows (amount, quantity, status, region, created_at, merchant)
-- Planned deployment: Vercel API routes + Neon (serverless Postgres) — frontend not yet wired
+- `seed.ts` creates the `transactions` table and inserts 60 rows (amount, quantity, status, region, created_at, merchant); run with `npx ts-node -r ./dns-patch.cjs seed.ts`
+
+### Backend — production (`/api`, live on Vercel)
+- Vercel serverless API routes + Neon serverless Postgres (`@neondatabase/serverless`)
+- `GET /api/schema` — queries `information_schema`, returns columns as `{ id, label, type }`
+- `POST /api/query` — accepts `{ where, page, pageSize }`, runs WHERE clause with pagination, returns `{ rows, total, page, pageSize }`
+- WHERE clause tokenized and re-parameterized: literals → `$N` params, identifiers validated against column whitelist — no raw interpolation
+- Both endpoints live and tested at https://flowquery.vercel.app/api/schema
+- Database: Neon (us-east-1), 60 rows seeded; `DATABASE_URL` set in Vercel env vars
+- Frontend not yet wired to the API
 
 ## Tech stack
 ### Frontend
 React · TypeScript · ReactFlow (@xyflow/react) · Zustand · Zod v4 · Tailwind CSS v4 · Vite
 
 ### Backend
-Node.js · Express · TypeScript · PostgreSQL (`pg`) · ts-node-dev
+Vercel API routes · `@neondatabase/serverless` · Neon (PostgreSQL) · Node.js · Express (local dev)
 
 ## Repo
 https://github.com/pujxn/flowquery
@@ -83,7 +88,6 @@ https://github.com/pujxn/flowquery
   rendered inside `<ReactFlow>`.
 
 ## Possible next steps
-- Migrate backend to Vercel API routes + Neon for production deployment
 - Wire frontend: dynamic Field dropdown from `/api/schema`, Run Query button + results table in QueryPreview
 - Edge labels showing the field/operator on connections
 - Undo / redo (Zustand middleware or ReactFlow's built-in)
