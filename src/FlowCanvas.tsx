@@ -14,10 +14,12 @@ import { useGraphStore } from '@/store/graphStore'
 import { nodeTypes } from '@/nodes'
 import { NodePalette } from '@/components/NodePalette'
 import { isConnectionAllowed } from '@/lib/graphValidation'
+import { useUrlSync } from '@/lib/useUrlSync'
 
 export function FlowCanvas() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useGraphStore()
   const [connectionError, setConnectionError] = useState<string | null>(null)
+  useUrlSync()
 
   const isValidConnection = useCallback((connection: Edge | Connection) => {
     const { nodes, edges } = useGraphStore.getState()

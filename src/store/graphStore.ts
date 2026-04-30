@@ -30,7 +30,7 @@ export interface GraphState {
   updateNodeData:(id: string, patch: Record<string, unknown>) => void
 }
 
-const initialNodes: Node[] = [
+const DEFAULT_NODES: Node[] = [
   {
     id:       'root-1',
     type:     'root',
@@ -40,9 +40,26 @@ const initialNodes: Node[] = [
   },
 ]
 
+function loadFromHash(): { nodes: Node[]; edges: Edge[] } | null {
+  try {
+    const match = window.location.hash.match(/^#v1=(.+)$/)
+    if (!match) return null
+    const raw = JSON.parse(atob(match[1]))
+    const nodes: Node[] = (raw.nodes as Node[]).map((n) => ({
+      ...n,
+      deletable: n.type === 'root' ? false : undefined,
+    }))
+    return { nodes, edges: raw.edges as Edge[] }
+  } catch {
+    return null
+  }
+}
+
+const saved = loadFromHash()
+
 export const useGraphStore = create<GraphState>((set) => ({
-  nodes: initialNodes,
-  edges: [],
+  nodes: saved?.nodes ?? DEFAULT_NODES,
+  edges: saved?.edges ?? [],
 
   onNodesChange: (changes) =>
     set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
