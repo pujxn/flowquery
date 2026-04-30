@@ -39,17 +39,39 @@ React · TypeScript · ReactFlow (@xyflow/react) · Zustand · Zod v4 · Tailwin
 ## Repo
 https://github.com/pujxn/flowquery
 
+### Node placement
+- New nodes always spawn at the center of the current viewport (not a hardcoded coordinate)
+- Small random offset prevents stacking when adding multiple nodes quickly
+
+### Shareable URLs
+- Graph state (nodes + edges) is base64-encoded into the URL hash (`#v1=...`) on every change
+- Opening a shared URL fully restores the graph
+- Uses `replaceState` so navigation history stays clean
+
+### Selection & copy/paste
+- Click to select, Shift+click to multi-select, Shift+drag for box select, Delete/Backspace to delete
+- Cmd/Ctrl+C copies selected non-root nodes and edges between them
+- Cmd/Ctrl+V pastes at +30px offset; repeated pastes cascade so they don't stack
+- Copy/paste is skipped when focus is in an input (Value node fields)
+
+### Light / dark mode
+- Sun/moon toggle in the header
+- Defaults to OS `prefers-color-scheme` on first visit; choice persisted to localStorage
+- All nodes, palette, query preview, canvas, controls, and minimap theme correctly
+
 ## Known bugs fixed
 - Value node caused black screen on add — Zustand selector was returning a new object
   literal every render, triggering an infinite re-render loop. Fixed by splitting into
   two selectors returning primitives/stable refs.
 - Vercel build failed — deprecated TypeScript `baseUrl` option, Zod v4 API rename
   (`invalid_type_error` → `error`), and ReactFlow `IsValidConnection` type mismatch.
+- App crashed on load after adding copy/paste — `useReactFlow` was called outside the
+  ReactFlow context. Fixed by wrapping the hook in a `CopyPasteHandler` component
+  rendered inside `<ReactFlow>`.
 
 ## Possible next steps
 - Edge labels showing the field/operator on connections
 - Undo / redo (Zustand middleware or ReactFlow's built-in)
-- Save / load graph to localStorage or JSON export
+- Save / load graph as JSON export / import
 - More field definitions or user-defined schema
-- Copy node / duplicate subgraph
 - Mobile / touch support improvements
